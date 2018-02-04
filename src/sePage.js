@@ -8,12 +8,30 @@ class SePage extends Component{
         static propTypes={
             books:PropTypes.array.isRequired
 }
+    state={
+        query:''
+    }
+
+    updateQuery = (query)=>{
+        this.setState({query:query.trim()})
+    }
+
 
 render(){
     const { books } = this.props
+    const {query}=this.state
+
+    let showBooks
+    if(query){
+        const match =new RegExp(escapeRegExp(query),'i')
+        showBooks=books.filter((book)=>match.test(book.title))
+    }else{
+        showBooks=books
+    }
+
+    showBooks.sort(sortBy('title'))
 
     return(
-        
         <div className="search-books">
             <div className="search-books-bar">
                 <Link   to='/' className="close-search" >close</Link>
@@ -24,17 +42,21 @@ render(){
                         https://github.com/udacity/reactnd-project-myreads-starter/blob/master/search_terms.md
                         however, remember that the booksapi.search method does search by title or author. so, don't worry if
                         you don't find a specific author or title. every search is limited by search terms.  */}
-                    <input type="text" placeholder="search by title or author"/>
+                    <input type="text"
+                           placeholder="search by title or author"
+                           value={query}
+                           onChange={(event)=>this.updateQuery(event.target.value)}
+                    />
 
                  </div>
              </div>
 <div className="search-books-results">
 <ol className="books-grid">
-{books.map((book)=>(
+    {showBooks.map((book)=>(
     <li key={book.id}>
         <div className="book">
             <div className="book-top">
-                <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${book.imageLinks.thumbnail})` }}></div>
+                <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${book.imageLinks.smallThumbnail})` }}></div>
                 <div className="book-shelf-changer">
                     <select>
                         <option value="none" disabled>move to...</option>
@@ -50,12 +72,10 @@ render(){
             {/* <div className="book-authors">{book.imageLinks.thumbnail}</div> */}
         </div>
     </li>
-    
 ))}
 </ol>
 </div>
     </div>
-     
      )
 }
 }
