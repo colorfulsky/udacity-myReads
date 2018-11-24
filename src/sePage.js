@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import escapeRegExp from 'escape-string-regexp'
 import sortBy from 'sort-by'
+import Book from './Components/Book.js'
 
 class SePage extends Component{
         static propTypes={
@@ -13,20 +14,21 @@ class SePage extends Component{
     }
 
     updateQuery = (query)=>{
-        this.setState({query:query.trim()})
+        this.setState({query:query.trimLeft().trimRight()})
     }
 
 
 render(){
-    const { books } = this.props
-    const {query}=this.state
+    const { books } = this.props;
+    const {query}=this.state;
+    console.log(books);
 
     let showBooks
     if(query){
         const match =new RegExp(escapeRegExp(query),'i')
         showBooks=books.filter((book)=>match.test(book.title))
     }else{
-        showBooks=books
+        showBooks=[]
     }
 
     showBooks.sort(sortBy('title'))
@@ -44,40 +46,22 @@ render(){
                         you don't find a specific author or title. every search is limited by search terms.  */}
                     <input type="text"
                            placeholder="search by title or author"
-                           value={query}
+                           value={this.state.query.value}
                            onChange={(event)=>this.updateQuery(event.target.value)}
                     />
 
                  </div>
              </div>
-<div className="search-books-results">
-<ol className="books-grid">
-    {showBooks.map((book)=>(
-    <li key={book.id}>
-        <div className="book">
-            <div className="book-top">
-                <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${book.imageLinks.smallThumbnail})` }}></div>
-                <div className="book-shelf-changer">
-                    <select>
-                        <option value="none" disabled>move to...</option>
-                        <option value="currentlyreading">currently reading</option>
-                        <option value="wanttoread">want to read</option>
-                        <option value="read">read</option>
-                        <option value="none">none</option>
-                    </select>
-                </div>
-            </div>
-            <div className="book-title">{book.title}</div>
-            <div className="book-authors">{book.authors}</div>
-            {/* <div className="book-authors">{book.imageLinks.thumbnail}</div> */}
+             <div className="search-books-results">
+                 <ol className="books-gird">
+                     {showBooks.map((book)=>
+                          <Book book={book} />
+                     )}
+                 </ol>
+             </div>
         </div>
-    </li>
-))}
-</ol>
-</div>
-    </div>
      )
-}
+  }
 }
 
 export default SePage

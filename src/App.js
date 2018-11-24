@@ -19,24 +19,31 @@ class BooksApp extends React.Component {
     componentDidMount(){
         BooksAPI.getAll().then((books)=>{
             this.setState({ books });
-            console.log(books);
+            console.log(this.state.books);
+        })
+    }
+
+    fetchBooks = () => {
+        BooksAPI.getAll().then((books)=>{
+            this.setState({books});
         })
     }
 
   render() {
-    return (
-        <div className="app">
-            <Route exact path='/' render={()=>(
-                <MainPage
-                    />
-            )}/>
-            <Route  path="/search" render={()=>(
-                <SePage
+      const books = this.state.books;
+      return (
+          <div className="app">
+              <Route exact path='/' render={()=>(
+                      <MainPage allBooks={books} fetchBooks={this.fetchBooks}
+                                         />
+                  )}/>
+              <Route  path="/search" render={()=>(
+                      <SePage
                     books={this.state.books}
-                    />
-            )}/>
-                 </div>
-    )
+                          />
+                  )}/>
+          </div>
+      )
   }
 }
 
